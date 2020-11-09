@@ -11,6 +11,8 @@ import static com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type.
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -141,15 +143,19 @@ public class WebhookController {
         String[] arr = event.text().split(" ");
         System.out.println(arr[0]);
         System.out.println(arr[1]);
+
         String url = "https://tse-sus.herokuapp.com/api/qldt/login";
         Connection.Response homePage = Jsoup.connect(url).ignoreContentType(true)
                 .method(Connection.Method.POST)
                 .data("user", arr[0])
                 .data("pass", arr[1])
                 .execute();
-        String text = homePage.parse().text();
+        Object text = homePage.parse();
         System.out.println(text);
-        sendTextMessageUser(senderId, text);
+        String formattedData=new ObjectMapper().writerWithDefaultPrettyPrinter()
+                .writeValueAsString(text);
+
+        sendTextMessageUser(senderId, formattedData);
 
 
 

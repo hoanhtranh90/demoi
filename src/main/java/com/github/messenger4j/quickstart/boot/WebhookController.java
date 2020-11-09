@@ -58,6 +58,8 @@ import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -65,6 +67,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +125,8 @@ public class WebhookController {
                 } catch (MessengerIOException e) {
                     logger.info("3");
                     e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             } else {
                 String senderId = event.senderId();
@@ -128,12 +136,19 @@ public class WebhookController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException {
+    private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException, IOException {
         final String senderId = event.senderId();
-        sendTextMessageUser(senderId, "Xin chào! Đây là chatbot được tạo từ ứng dụng Spring Boot");
         String[] arr = event.text().split(" ");
         System.out.println(arr[0]);
         System.out.println(arr[1]);
+        String url = "https://https://tse-sus.herokuapp.com/api/qldt/login";
+        Document homePage = Jsoup.connect(url)
+                .method(Connection.Method.POST)
+                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$txtTaiKhoa", arr[0])
+                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$txtMatKhau", arr[1])
+                .get();
+        sendTextMessageUser(senderId, homePage.text());
+
 
 
 

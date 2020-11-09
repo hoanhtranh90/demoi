@@ -150,7 +150,7 @@ public class WebhookController {
                 .data("user", arr[0])
                 .data("pass", arr[1])
                 .execute();
-        Object text = homePage.parse();
+        Object text = homePage.body();
         System.out.println(text);
         String formattedData=new ObjectMapper().writerWithDefaultPrettyPrinter()
                 .writeValueAsString(text);

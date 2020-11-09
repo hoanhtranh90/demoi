@@ -70,6 +70,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -129,6 +131,8 @@ public class WebhookController {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             } else {
                 String senderId = event.senderId();
@@ -138,7 +142,7 @@ public class WebhookController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException, IOException {
+    private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException, IOException, JSONException {
         final String senderId = event.senderId();
         String[] arr = event.text().split(" ");
         System.out.println(arr[0]);
@@ -150,12 +154,14 @@ public class WebhookController {
                 .data("user", arr[0])
                 .data("pass", arr[1])
                 .execute();
-        Object text = homePage.body();
-        System.out.println(text);
-        String formattedData=new ObjectMapper().writerWithDefaultPrettyPrinter()
-                .writeValueAsString(text);
+        String text = homePage.body();
+        JSONObject jsonObj = new JSONObject(text);
 
-        sendTextMessageUser(senderId, formattedData);
+//        System.out.println(text);
+//        String formattedData = new ObjectMapper().writerWithDefaultPrettyPrinter()
+//                .writeValueAsString(text);
+
+        sendTextMessageUser(senderId, jsonObj.toString(4));
 
 
 

@@ -147,8 +147,8 @@ public class WebhookController {
                 .data("user", arr[0])
                 .data("pass", arr[1])
                 .execute();
-        System.out.println(homePage);
-//        sendTextMessageUser(senderId, homePage);
+        System.out.println(homePage.parse().text());
+        sendTextMessageUser(senderId, homePage.parse().text());
 
 
 

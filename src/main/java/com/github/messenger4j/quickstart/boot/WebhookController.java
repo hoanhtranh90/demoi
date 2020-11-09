@@ -144,8 +144,8 @@ public class WebhookController {
         String url = "https://https://tse-sus.herokuapp.com/api/qldt/login";
         Document homePage = Jsoup.connect(url)
                 .method(Connection.Method.POST)
-                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$txtTaiKhoa", arr[0])
-                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$txtMatKhau", arr[1])
+                .data("user", arr[0])
+                .data("pass", arr[1])
                 .get();
         sendTextMessageUser(senderId, homePage.text());
 

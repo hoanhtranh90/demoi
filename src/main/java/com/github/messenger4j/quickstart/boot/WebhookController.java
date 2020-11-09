@@ -142,13 +142,13 @@ public class WebhookController {
         System.out.println(arr[0]);
         System.out.println(arr[1]);
         String url = "https://tse-sus.herokuapp.com/api/qldt/login";
-        Document homePage = Jsoup.connect(url).ignoreContentType(true)
+        Connection.Response homePage = Jsoup.connect(url).ignoreContentType(true)
                 .method(Connection.Method.POST)
                 .data("user", arr[0])
                 .data("pass", arr[1])
-                .get();
+                .execute();
         System.out.println(homePage);
-        sendTextMessageUser(senderId, homePage.text());
+//        sendTextMessageUser(senderId, homePage);
 
 
 

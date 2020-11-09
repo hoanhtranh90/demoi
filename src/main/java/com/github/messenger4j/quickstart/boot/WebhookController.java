@@ -37,6 +37,7 @@ import com.github.messenger4j.send.message.template.button.LogInButton;
 import com.github.messenger4j.send.message.template.button.LogOutButton;
 import com.github.messenger4j.send.message.template.button.PostbackButton;
 import com.github.messenger4j.send.message.template.button.UrlButton;
+import com.github.messenger4j.send.message.template.common.Element;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;
 import com.github.messenger4j.send.message.template.receipt.Item;
@@ -57,18 +58,13 @@ import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
-
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
-import java.util.*;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,8 +119,6 @@ public class WebhookController {
                 } catch (MessengerIOException e) {
                     logger.info("3");
                     e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             } else {
                 String senderId = event.senderId();
@@ -134,61 +128,18 @@ public class WebhookController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private ResponseEntity<?> handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException, IOException {
+    private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException {
         final String senderId = event.senderId();
         sendTextMessageUser(senderId, "Xin chào! Đây là chatbot được tạo từ ứng dụng Spring Boot");
         String[] arr = event.text().split(" ");
+        System.out.println(arr[0]);
+        System.out.println(arr[1]);
 
-        String url = "http://qldt.ptit.edu.vn/";
-        String url1 = "http://qldt.ptit.edu.vn/default.aspx";
-        Connection.Response response2 = Jsoup.connect(url)
-                .method(Connection.Method.GET)
-                .execute();
 
-        Document responseDocument = response2.parse();
 
-        //        Element eventValidation = responseDocument.select("input[name=__EVENTVALIDATION]").first();
-        org.jsoup.nodes.Element viewState = responseDocument.select("input[name=__VIEWSTATE]").first();
-        //        Element viewStateGen = responseDocument.select("input[name=__VIEWSTATEGENERATOR]").first();
-//        System.out.println(viewState.attr("value"));
-        Connection.Response response = Jsoup.connect(url1)
-                .method(Connection.Method.POST)
-                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$txtTaiKhoa", arr[0])
-                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$txtMatKhau", arr[1])
-                .data("ctl00$ContentPlaceHolder1$ctl00$ucDangNhap$btnDangNhap", "Đăng Nhập")
-                .data("__EVENTTARGET", "")
-                .data("__EVENTARGUMENT", "")
-                .execute();
-        Map<String, String> cookies = response.cookies();
 
-        Document homePage = Jsoup.connect("http://qldt.ptit.edu.vn/Default.aspx?page=thoikhoabieu")
-                .cookies(cookies)
-                .get();
-        Element docs = homePage.getElementById("ctl00_ContentPlaceHolder1_ctl00_pnlTuan");
-        Elements sizeKip = docs.select("tbody").first().children();
-        TreeMap<String,Map<String,String>> listAll = new TreeMap<>(); //treemap tứ sắp xếp
-        for (int i = 2 ; i < 7;i++) { // thứ trong tuần
-            TreeMap<String,String> kipTrongNgay = new TreeMap<>();
-            String monTrongTiet = String.format("td:nth-child(%d)",i);
-            ArrayList<String> monHocTrongNgay = new ArrayList<>();
-            for(int j = 0 ; j<=11;j++){
-                if(j%2 == 0)
-                    monHocTrongNgay.add(sizeKip.select(monTrongTiet).get(j).text());
-            }
-            for(int j = 1;j<=6;j++){
-                kipTrongNgay.put("kíp"+j,monHocTrongNgay.get(j-1));
-            }
-            listAll.put("thứ " + i, kipTrongNgay);
-        }
-        Map<String, Map<String, Map<String, String>>> listDayInWeek = new HashMap<>();
-        listDayInWeek.put("tkb",listAll);
-        System.out.println(listDayInWeek);
-        return ResponseEntity.ok(listDayInWeek);
+
     }
-
-
-
-
 
     private void sendTextMessageUser(String idSender, String text) {
         try {

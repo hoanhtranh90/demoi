@@ -141,7 +141,7 @@ public class WebhookController {
         String[] arr = event.text().split(" ");
         System.out.println(arr[0]);
         System.out.println(arr[1]);
-        String url = "https://https://tse-sus.herokuapp.com/api/tu-cam/1";
+        String url = "https://tse-sus.herokuapp.com/api/tu-cam/1";
         Document homePage = Jsoup.connect(url)
 //                .method(Connection.Method.POST)
 //                .data("user", arr[0])
